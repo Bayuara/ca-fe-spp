@@ -5,18 +5,23 @@ import ChangePasswordForm from "../components/auth/ChangePasswordForm";
 import Modals from "../components/common/Modals"; // Mengimpor komponen Modals
 import { useNavigate } from "react-router-dom";
 import AuthService from "@/services/authServices";
-import { useAuth } from "@/components/hooks/useAuth";
 import { toast } from "sonner";
 import { useLayout } from "@/components/hooks/useLayout";
 import Logo from "@/components/common/Logo";
+import { useLogin } from "@/presentation/hooks/useLogin";
 
 const LoginPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { onLogIn } = useAuth();
+  // const { onLogIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const { setHideLayout } = useLayout();
+
+  const { login } = useLogin({
+    onPasswordChangeRequired: () => setIsModalOpen(true),
+    setLoading,
+  });
 
   useEffect(() => {
     setHideLayout(true);
@@ -27,42 +32,43 @@ const LoginPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLogin = async (val: unknown) => {
-    setLoading(true);
-    try {
-      const response = await AuthService.login(val);
-      const { data } = response;
-
-      // console.log("response login API:", response);
-      // console.log("data structure:", data); // Add this line to inspect the data structure
-      // console.log("message login API:", message);
-
-      const { accessToken, refreshToken, isPasswordChangeRequired } = data;
-
-      onLogIn({
-        // user, // Add the user object here
-        accessToken,
-        refreshToken,
-      });
-
-      toast.success("Login Berhasil!");
-
-      if (isPasswordChangeRequired) {
-        toast.info("Mohon ganti Password!");
-        setIsModalOpen(true);
-        setLoading(false);
-      } else {
-        setTimeout(() => navigate("/"), 500);
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const err = error as Error;
-      toast.error(err.message);
-      // console.log(`error catch:${err.message}`);
-      setLoading(false);
-    }
+  const handleLogin = async (val: { userCode: string; password: string }) => {
+    const { userCode, password } = val;
+    await login(userCode, password);
   };
+
+  // const handleLogin = async (val: unknown) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await AuthService.login(val);
+  //     const { data } = response;
+
+  //     const { accessToken, refreshToken, isPasswordChangeRequired } = data;
+
+  //     onLogIn({
+  //       // user, // Add the user object here
+  //       accessToken,
+  //       refreshToken,
+  //     });
+
+  //     toast.success("Login Berhasil!");
+
+  //     if (isPasswordChangeRequired) {
+  //       toast.info("Mohon ganti Password!");
+  //       setIsModalOpen(true);
+  //       setLoading(false);
+  //     } else {
+  //       setTimeout(() => navigate("/"), 500);
+  //     }
+
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   } catch (error: any) {
+  //     const err = error as Error;
+  //     toast.error(err.message);
+  //     // console.log(`error catch:${err.message}`);
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleChangePassword = async (val: unknown) => {
     setLoading(true);

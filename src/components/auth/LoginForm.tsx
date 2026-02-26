@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import InputField from "../common/InputField";
 import Button from "../common/Button";
 import * as yup from "yup";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_FORGET_PASSWORD } from "../routes/routes";
@@ -17,7 +17,7 @@ const schema = yup.object({
 
 interface FormProps {
   isLoading: boolean;
-  onSubmit: (val: FieldValues) => Promise<void>;
+  onSubmit: (val: { userCode: string; password: string }) => Promise<void>;
 }
 
 const LoginForm: React.FC<FormProps> = ({ isLoading, onSubmit }) => {
@@ -32,7 +32,7 @@ const LoginForm: React.FC<FormProps> = ({ isLoading, onSubmit }) => {
     label: string,
     placeholder: string,
     name: keyof yup.InferType<typeof schema>,
-    description?: string
+    description?: string,
   ) => {
     const errObj = errors[name];
     return {
@@ -54,10 +54,13 @@ const LoginForm: React.FC<FormProps> = ({ isLoading, onSubmit }) => {
 
   const isDisabled = useMemo(
     () => !userCodeVal && !passwordVal,
-    [userCodeVal, passwordVal]
+    [userCodeVal, passwordVal],
   );
 
-  const handleTrimAndSubmit = (data: FieldValues) => {
+  const handleTrimAndSubmit = (data: {
+    userCode: string;
+    password: string;
+  }) => {
     // Trim the input values
     const trimmedData = {
       ...data,
@@ -77,7 +80,7 @@ const LoginForm: React.FC<FormProps> = ({ isLoading, onSubmit }) => {
         {...getFormAttributes(
           "Kode Pengguna",
           "Masukkan Kode Pengguna",
-          "userCode"
+          "userCode",
         )}
         id="userCode"
       />

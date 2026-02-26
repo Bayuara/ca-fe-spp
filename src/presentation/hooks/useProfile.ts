@@ -19,7 +19,7 @@ export function useProfile() {
           phoneNumber,
         });
 
-        if (result.success) {
+        if (result.message) {
           toast.success(result.message || "Informasi profil berhasil diperbarui.");
           refetch();
           return true;
