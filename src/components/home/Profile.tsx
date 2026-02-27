@@ -6,11 +6,10 @@ import { MdAccountCircle } from "react-icons/md";
 import { RxExit } from "react-icons/rx";
 import clsx from "clsx";
 import { useAuth } from "../hooks/useAuth";
-import { toast } from "sonner";
 import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import useWrapInvalidToken from "../hooks/useWrapInvalidToken";
-import AuthService from "@/services/authServices";
-import ConfirmationModals from "../common/ConfirmationModals"; // ConfirmationModalResult,
+import ConfirmationModals from "../common/ConfirmationModals";
+import { useLogout } from "@/presentation/hooks/UseLogout";
 
 const Profile: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,42 +17,20 @@ const Profile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { onLogOut, user, refreshToken } = useAuth();
+  const { user } = useAuth();
+
+  const { logout } = useLogout({ setLoading: setIsLoading });
 
   // console.log("test isPaymentCashless: ", user?.customer.isPaymentCashless);
-  const wrappedLogout = useWrapInvalidToken(AuthService.logout);
+  const wrappedLogout = useWrapInvalidToken(logout);
 
   const imageUrl = user?.userDetail?.imgUrl
     ? `${import.meta.env.VITE_BASE_URL}${user.userDetail.imgUrl}`
     : avatar;
 
   const handleConfirmLogout = async () => {
-    setIsLoading(true);
-    setIsModalOpen(false);
-    try {
-      await wrappedLogout({ refreshToken });
-      onLogOut();
-      navigate("/login");
-      toast.info("Logout Berhasil!");
-    } catch (error) {
-      // console.log(error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Terjadi Kesalahan");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await wrappedLogout();
   };
-
-  // const hanldeConfirmationModal = async ({
-  //   confirmed,
-  // }: ConfirmationModalResult) => {
-  //   if (confirmed) {
-  //     handleConfirmLogout();
-  //   }
-  // };
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

@@ -1,4 +1,4 @@
-export interface LoginResponseDto {
+export type LoginResponseDto = {
   username: string;
   isActive: boolean;
   isVerified: boolean;
@@ -6,4 +6,4 @@ export interface LoginResponseDto {
   refreshToken: string;
   loginStatus: "SUCCESS" | "FAILED";
   isPasswordChangeRequired: boolean;
-}
+};
