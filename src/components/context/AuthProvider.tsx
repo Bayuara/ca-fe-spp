@@ -1,5 +1,6 @@
 // src/components/context/AuthProvider.tsx
-import { User } from "../../services/types/user";
+// import { User } from "../../services/types/user";
+import { User } from "@/domain/entities/User";
 import React, { useMemo, useState } from "react";
 
 export interface IAuthContext {
