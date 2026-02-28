@@ -1,4 +1,4 @@
-export interface SharedResult<T = unknown> {
+export type SharedResult<T = unknown> = {
   data: T;
   message: string;
   status: string;
@@ -6,4 +6,4 @@ export interface SharedResult<T = unknown> {
     totalItems: number;
   };
   totalAmount?: number;
-}
+};

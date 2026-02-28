@@ -6,7 +6,7 @@
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { changeProfileUseCase } from "@/infrastructure/container";
-import { useAuth } from "@/components/hooks/useAuth";
+import { useAuth } from "@/presentation/components/hooks/useAuth";
 
 export function useProfile() {
   const { refetch } = useAuth();
@@ -20,7 +20,9 @@ export function useProfile() {
         });
 
         if (result.message) {
-          toast.success(result.message || "Informasi profil berhasil diperbarui.");
+          toast.success(
+            result.message || "Informasi profil berhasil diperbarui.",
+          );
           refetch();
           return true;
         }
@@ -32,7 +34,7 @@ export function useProfile() {
         refetch();
       }
     },
-    [refetch]
+    [refetch],
   );
 
   return { changeProfile };

@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { AuthProvider } from "./components/context/AuthProvider.tsx";
-import { LayoutProvider } from "./components/context/LayoutProvider.tsx";
+import { AuthProvider } from "./presentation/components/context/AuthProvider.tsx";
+import { LayoutProvider } from "./presentation/components/context/LayoutProvider.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -12,5 +12,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <App />
       </LayoutProvider>
     </AuthProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
