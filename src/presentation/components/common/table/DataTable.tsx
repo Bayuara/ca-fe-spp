@@ -71,28 +71,6 @@ function DataTable<T>(props: TableProps<T>) {
 
   const wrappedFetchData = useWrapInvalidToken(fetchData!);
 
-  // useEffect(() => {
-  //   const x = setTimeout(() => {
-  //     const keys = Object.keys(rowSelection);
-
-  //     const isGetOnlyId = typeof getRowId !== "function";
-
-  //     const arr = keys.map((key) => {
-  //       if (isGetOnlyId) return data[+key];
-  //       return getRowId(data[+key]) as number;
-  //     });
-
-  //     if (onRowSelectionChange) {
-  //       onRowSelectionChange(isGetOnlyId ? (arr as number[]) : (arr as T[]));
-  //     }
-  //   }, 500);
-
-  //   return () => {
-  //     clearTimeout(x);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [rowSelection, data]);
-
   const [pageData, setPageData] = useState({
     totalItems: data.length,
     limit,

@@ -30,7 +30,7 @@ export class ApiClient {
   async request<T>(
     url: string,
     method: string,
-    body?: unknown
+    body?: unknown,
   ): Promise<ApiClientResponse<T>> {
     const response = await fetch(`${this.baseUrl}/${url}`, {
       method,
@@ -48,4 +48,40 @@ export class ApiClient {
 
     return response.json();
   }
+
+  async requestBlob(
+    url: string,
+    method: string,
+    body?: unknown,
+  ): Promise<Blob> {
+    const response = await fetch(`${this.baseUrl}/${url}`, {
+      method,
+      body: body ? JSON.stringify(body) : undefined,
+      headers: this.getHeaders(),
+    });
+
+    if (!response.ok) {
+      const { message } = await response.json();
+      throw new Error(message);
+    }
+
+    return response.blob();
+  }
+}
+
+export function generateSearchParams(payload: object = {}) {
+  const keys = Object.keys(payload);
+  const arr = keys
+    .filter((key) => payload[key as keyof object] !== undefined)
+    .map((key) => {
+      const k = key as keyof object;
+      if (!Array.isArray(payload[k]))
+        return `${key}=${payload[key as keyof object]}`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const arr: any[] = payload[k];
+
+      return arr.map((a) => `${k}=${a}`).join("&");
+    });
+
+  return arr.join("&");
 }

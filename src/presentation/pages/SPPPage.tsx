@@ -22,6 +22,8 @@ import useWaitingSppDatable from "@/presentation/components/spp/useWaitingSppDat
 import ConfirmationModals from "@/presentation/components/common/ConfirmationModals";
 import { ROUTE_SPP } from "@/presentation/components/routes/routes";
 import { useQuery } from "@tanstack/react-query";
+import { useGets } from "../hooks/spp/useGets";
+import { useGetAllWaitingSpp } from "../hooks/spp/useGetAllWaitingSpp";
 
 const Banner = React.lazy(() => import("../components/layout/Banner"));
 
@@ -58,11 +60,13 @@ const SPPPage: React.FC = () => {
     content: () => printRef.current,
   });
 
+  const { gets } = useGets();
+  const { getAllWaitingSpp } = useGetAllWaitingSpp();
+
   const { data, isLoading } = useQuery({
     queryKey: ["spp", filter],
-    queryFn: () =>
-      filter === "all" ? SppService.gets() : SppService.getAllWaitingSpp(),
-    select: (response) => response.data,
+    queryFn: () => (filter === "all" ? gets() : getAllWaitingSpp()),
+    // select: (response) => response.data,
     // refetchOnWindowFocus: true,
   });
 

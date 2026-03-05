@@ -28,11 +28,7 @@ function SearchCell<TData>(props: ISearchCellProps<TData>) {
       placeholder={placeholder}
       inputSize="sm"
       className="bg-[#FFF] min-w-24"
-      // style={{
-      //   fontSize: "0.875rem",
-      //   lineHeight: "1.25rem",
-      //   fontWeight: "normal",
-      // }}
+
       suffix={<FiSearch className="text-[#7A7A7A] w-4 h-4 phone:size-3" />}
       value={value}
       onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
