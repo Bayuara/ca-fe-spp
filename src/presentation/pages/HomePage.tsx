@@ -5,42 +5,65 @@ import ImgHome from "../assets/img-home.png";
 import Button from "../components/common/Button";
 import Greetings from "../components/home/Greetings";
 import { Navigate } from "react-router-dom";
-import SppService from "@/services/sppServices";
 import clsx from "clsx";
-import useWrapInvalidToken from "@/presentation/components/hooks/useWrapInvalidToken";
+import { useGetpaymentByStatus } from "../hooks/spp/useGetPaymentByStatus";
+// Import hook baru
 
 const HomePage: React.FC = () => {
-  const [toSPP, setToSPP] = React.useState(false);
+  const [toSPP, setToSPP] = useState(false);
   const [unpaidMonths, setUnpaidMonths] = useState<number | null>(null);
-  const WrappedFetchUnpaidMonths = useWrapInvalidToken(
-    SppService.getPaymentByStatus,
-  );
+
+  // Gunakan hook
+  const { getPaymentByStatus } = useGetpaymentByStatus();
 
   useEffect(() => {
     const fetchUnpaidMonths = async () => {
       try {
-        const responseUnpaidSpp = (await WrappedFetchUnpaidMonths(3)).page
-          .totalItems;
-        const responseWaitingSpp = (await WrappedFetchUnpaidMonths(2)).page
-          .totalItems;
-        setUnpaidMonths(responseUnpaidSpp + responseWaitingSpp);
+        // Status 3 (Belum Bayar) dan Status 2 (Menunggu Pembayaran)
+        const responseUnpaid = await getPaymentByStatus(3);
+        const responseWaiting = await getPaymentByStatus(2);
+
+        // Ambil totalItems dari properti page
+        const totalUnpaid = responseUnpaid?.page?.totalItems || 0;
+        const totalWaiting = responseWaiting?.page?.totalItems || 0;
+
+        setUnpaidMonths(totalUnpaid + totalWaiting);
       } catch (error) {
+        console.error("Error fetching unpaid months:", error);
         setUnpaidMonths(0);
       }
     };
 
     fetchUnpaidMonths();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toSPP]);
+  }, [getPaymentByStatus]); // Dependency ke fungsi dari hook
 
-  if (toSPP === true) {
+  // useEffect(() => {
+  //   const fetchUnpaidMonths = async () => {
+  //     try {
+  //       const responseUnpaidSpp = (await WrappedFetchUnpaidMonths(3)).page
+  //         .totalItems;
+
+  //       const responseWaitingSpp = (await WrappedFetchUnpaidMonths(2)).page
+  //         .totalItems;
+
+  //       setUnpaidMonths(responseUnpaidSpp + responseWaitingSpp);
+  //     } catch (error) {
+  //       setUnpaidMonths(0);
+  //     }
+  //   };
+
+  //   fetchUnpaidMonths();
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [toSPP]);
+
+  if (toSPP) {
     return <Navigate to="/spp" />;
   }
 
-  // console.log("unpaidMonths: ", unpaidMonths);
-
   return (
     <div className="bg-putihNormal flex flex-col my-auto">
+      {/* Notifikasi hanya muncul jika ada bulan yang belum lunas */}
       <div
         className={clsx({
           invisible: unpaidMonths === null || unpaidMonths <= 0,
@@ -52,6 +75,7 @@ const HomePage: React.FC = () => {
           linkHref="/spp"
         />
       </div>
+
       <div className="mx-auto py-2 flex-grow flex items-center justify-center">
         <div className="flex flex-col laptop:flex-row items-center justify-between text-start laptop:text-left">
           <div className="mx-8 laptop:ml-14 laptop:w-1/2 laptop:pr-8 font-poppins">

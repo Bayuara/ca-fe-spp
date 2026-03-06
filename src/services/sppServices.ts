@@ -10,6 +10,7 @@ export default class SppService {
   static async getAllSpp() {
     return fetchData<SppPrint[]>("payment/payment-history", "GET");
   }
+  
   static async getAllSppByMonth() {
     return fetchData<SppPrint[]>(
       "payment/payment-history?orderBy=month-asc&limit=6",

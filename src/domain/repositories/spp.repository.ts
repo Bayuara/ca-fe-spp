@@ -4,6 +4,8 @@ export type ApiResponse<T> = {
   data: T;
   message: string;
   status: string;
+  page?: { totalItems: number };
+  totalAmount?: number;
 };
 
 export interface SppRepository {
@@ -16,7 +18,7 @@ export interface SppRepository {
   cancelPayment(transactionId: string): Promise<ApiResponse<SppPrint[]>>;
   gets(payload?: unknown): Promise<ApiResponse<SppPrint[]>>;
   getById(id: number): Promise<ApiResponse<SppPrint[]>>;
-  getByIdBlob(id: string): Promise<Blob>;
+  getByIdBlob(id: number): Promise<Blob>;
   getQrisImg(payload?: unknown): Promise<ApiResponse<unknown>>;
   submitPayment(url: string, body: object): Promise<ApiResponse<SppPrint[]>>;
 }

@@ -33,7 +33,7 @@ export class SppRepositoryImpl implements SppRepository {
     return this.apiClient.request("payment/" + id, "GET");
   }
 
-  async getByIdBlob(id: string): Promise<Blob> {
+  async getByIdBlob(id: number): Promise<Blob> {
     return this.apiClient.requestBlob("payment/" + id, "GET");
   }
 
@@ -61,7 +61,7 @@ export class SppRepositoryImpl implements SppRepository {
 
   async gets(payload?: unknown): Promise<ApiResponse<SppPrint[]>> {
     return this.apiClient.request(
-      "payment/payment-history?orderBy=year-asc&orderBy=month-asc&" +
+      "payment/payment-history?orderBy=year-asc&orderBy=month-desc&" +
         generateSearchParams(payload as object),
       "GET",
     );
