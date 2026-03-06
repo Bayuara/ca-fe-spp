@@ -14,7 +14,6 @@ import Button from "../components/common/Button";
 import { toast } from "sonner";
 import clsx from "clsx";
 import { SppPrint } from "@/services/types/spp";
-import SppService from "@/services/sppServices";
 import { useReactToPrint } from "react-to-print";
 import InvoiceDetailPrint from "./print/InvoiceDetailPrint";
 import useSppDatable from "@/presentation/components/spp/useSppDatable";
@@ -24,12 +23,11 @@ import { ROUTE_SPP } from "@/presentation/components/routes/routes";
 import { useQuery } from "@tanstack/react-query";
 import { useGets } from "../hooks/spp/useGets";
 import { useGetAllWaitingSpp } from "../hooks/spp/useGetAllWaitingSpp";
+import { useCancelPayment } from "../hooks/spp/useCancelPayment";
 
 const Banner = React.lazy(() => import("../components/layout/Banner"));
 
 const SPPPage: React.FC = () => {
-  // const queryClient = useQueryClient();
-
   const printRef = useRef<HTMLDivElement>(null);
   const { columns, selectedItems } = useSppDatable({ printRef });
   const {
@@ -45,16 +43,8 @@ const SPPPage: React.FC = () => {
   const [isAllPaid, setIsAllPaid] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [refetch, setRefetch] = useState(false);
-  // const [data, setData] = useState<SppPrint[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [printItems, setPrintItems] = useState<SppPrint[]>([]);
-
-  const fetchAllSpp = async () => (await SppService.gets()).data;
-  const fetchWaitingSpp = async () =>
-    (await SppService.getAllWaitingSpp()).data;
-  // const fetchWaitingSppTransactionId = async () =>
-  //   (await SppService.getAllWaitingSpp()).data[0].transactionId;
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -62,6 +52,7 @@ const SPPPage: React.FC = () => {
 
   const { gets } = useGets();
   const { getAllWaitingSpp } = useGetAllWaitingSpp();
+  const { cancelPayment } = useCancelPayment();
 
   const { data, isLoading } = useQuery({
     queryKey: ["spp", filter],
@@ -72,11 +63,11 @@ const SPPPage: React.FC = () => {
 
   const handleDownloadClick = async () => {
     if (filter === "all") {
-      setPrintItems(await fetchAllSpp());
+      setPrintItems(await gets());
       // console.log("selectedItems: ", printItems);
       setTimeout(handlePrint, 1000);
     } else {
-      setPrintItems(await fetchWaitingSpp());
+      setPrintItems(await getAllWaitingSpp());
       // console.log("selectedWaitingItems: ", printItems);
       setTimeout(handlePrint, 1000);
     }
@@ -105,18 +96,6 @@ const SPPPage: React.FC = () => {
       );
     }
   }, [filter, selectedItems, selectedWaitingItems]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const result = await fetchAllSpp();
-  //     setData(result);
-  //   };
-  //   fetchData();
-  // }, [refetch]);
-
-  // }, [data, refetch, hasPendingPayments]);
-
-  // console.log("isi state data: ", data);
 
   const handleSelectionChange = useCallback((selectedIds: number[]) => {
     setSelectedIds(selectedIds);
@@ -149,10 +128,9 @@ const SPPPage: React.FC = () => {
     console.log("refetch sebelum try: ", refetch);
 
     try {
-      const fetchTransactionId = (await SppService.getAllWaitingSpp()).data[0]
-        .transactionId;
-      const response = await SppService.cancelPayment(fetchTransactionId!);
-      toast.success(response.message);
+      const fetchTransactionId = (await getAllWaitingSpp())[0].transactionId;
+      const response = await cancelPayment(fetchTransactionId!);
+      toast.success(response?.message);
       setIsConfirmationModal(false);
       // Fetch fresh data after cancellation
       // const newData = await fetchAllSpp();
@@ -237,10 +215,10 @@ const SPPPage: React.FC = () => {
           </div>
         </div>
         <div className="flex justify-center w-full mt-5">
-          {filter === "Menunggu Pembayaran" && (
+          {/* {filter === "Menunggu Pembayaran" && (
             <DataTable
               columns={columnsWaiting}
-              fetchData={SppService.getAllWaitingSpp}
+              fetchData={getAllWaitingSpp()}
               getRowId={(val) => val.id}
               refetch={refetch}
               onSelectionChange={handleSelectionChange}
@@ -251,13 +229,48 @@ const SPPPage: React.FC = () => {
             <DataTable
               columns={columns}
               // fetchData={SppService.getAllSppByMonth}
-              fetchData={SppService.gets}
+              fetchData={gets()}
               // fetchData={fetchAllSpp}
               getRowId={(val) => val.id}
               refetch={refetch}
               onSelectionChange={handleSelectionChange}
             />
-          )}
+          )} */}
+          {/* <DataTable
+            columns={filter === "all" ? columns : columnsWaiting}
+            fetchData={async () => {
+              const response =
+                filter === "all" ? await gets() : await getAllWaitingSpp();
+              return {
+                data: response || [],
+                page: { totalItems: response?.length || 0 },
+              };
+            }}
+            getRowId={(val) => val.id}
+            refetch={refetch}
+            onSelectionChange={handleSelectionChange}
+            onRowClick={(val) => navigate(`${ROUTE_SPP}/view-spp/${val.id}`)}
+          /> */}
+          <DataTable
+            key={filter}
+            columns={filter === "all" ? columns : columnsWaiting}
+            fetchData={async () => {
+              const response =
+                filter === "all" ? await gets() : await getAllWaitingSpp();
+              return {
+                data: response || [],
+                page: { totalItems: response?.length || 0 },
+              };
+            }}
+            getRowId={(val) => val.id}
+            refetch={refetch}
+            onSelectionChange={handleSelectionChange}
+            onRowClick={(val) => {
+              if (filter !== "all") {
+                navigate(`${ROUTE_SPP}/view-spp/${val.id}`);
+              }
+            }}
+          />
         </div>
         {filter !== "Menunggu Pembayaran" && (
           <div className="my-8">
