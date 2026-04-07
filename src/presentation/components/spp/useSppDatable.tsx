@@ -10,7 +10,8 @@ import { RiFileDownloadLine } from "react-icons/ri";
 import { BsEye } from "react-icons/bs";
 import { ROUTE_SPP } from "../routes/routes";
 import { useNavigate } from "react-router-dom";
-import SppService from "@/services/sppServices";
+// import SppService from "@/services/sppServices";
+import { useGetPaymentByTransactionId } from "@/presentation/hooks/spp/useGetPaymentByTransactionId";
 
 interface UseInvoiceDatatablePayload {
   printRef: RefObject<HTMLDivElement>;
@@ -20,6 +21,7 @@ export default function useSppDatable(payload: UseInvoiceDatatablePayload) {
   const { printRef } = payload;
 
   const navigate = useNavigate();
+  const { getPaymentByTransactionId } = useGetPaymentByTransactionId();
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -224,8 +226,7 @@ export default function useSppDatable(payload: UseInvoiceDatatablePayload) {
           .join(",");
 
         const fetchByTransactionId = async () =>
-          (await SppService.getPaymentByTransactionId(transactionId ?? ""))
-            .data;
+          await getPaymentByTransactionId(transactionId ?? "");
 
         const handleView = () => {
           if (statusPayment?.name === "Menunggu Pembayaran") {
@@ -254,7 +255,9 @@ export default function useSppDatable(payload: UseInvoiceDatatablePayload) {
               text="Unduh"
               onClick={async () => {
                 if (transactionId) {
-                  setSelectedItems(await fetchByTransactionId());
+                  // setSelectedItems(await fetchByTransactionId(transactionId));
+                  const response = await fetchByTransactionId();
+                  setSelectedItems(response?.data);
                   setTimeout(handlePrint, 1000);
                 } else {
                   setSelectedItems(cell.row.original);
@@ -271,50 +274,6 @@ export default function useSppDatable(payload: UseInvoiceDatatablePayload) {
         );
       },
     }),
-
-    // columnHelper.display({
-    //   id: "action",
-    //   header: () => <span>Action</span>,
-    //   cell: ({ cell }) => {
-    //     // const {
-    //     //   row: {
-    //     //     original: {  },
-    //     //   },
-    //     // } = cell;
-    //     const { id, transactionId } = cell.row.original;
-
-    //     const fetchByTransactionId = async () =>
-    //       (await SppService.getPaymentByTransactionId(transactionId ?? ""))
-    //         .data;
-
-    //     return (
-    //       <div className="flex gap-2 phone:gap-1">
-    //         <TableControl
-    //           icon={<RiFileDownloadLine className="size-6 phone:size-4" />}
-    //           text="Download"
-    //           onClick={async () => {
-    //             if (transactionId) {
-    //               setSelectedItems(await fetchByTransactionId());
-    //               setTimeout(handlePrint, 1000);
-    //             } else {
-    //               setSelectedItems(cell.row.original);
-    //               setTimeout(handlePrint, 1000);
-    //             }
-    //           }}
-    //         />
-    //         <TableControl
-    //           icon={<BsEye className="size-6 phone:size-4" />}
-    //           text="Lihat"
-    //           onClick={() => {
-    //             navigate(`${ROUTE_SPP}/view-spp/${id}`, {
-    //               state: { transactionId },
-    //             });
-    //           }}
-    //         />
-    //       </div>
-    //     );
-    //   },
-    // }),
   ];
 
   return { columns, selectedItems, handlePrint };

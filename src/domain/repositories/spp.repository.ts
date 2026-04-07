@@ -14,7 +14,9 @@ export interface SppRepository {
   getAllWaitingSpp(): Promise<ApiResponse<SppPrint[]>>;
   getPaymentByStatus(statusPaymentId: number): Promise<ApiResponse<Spp[]>>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getPaymentByTransactionId(transactionId: string): Promise<ApiResponse<any>>;
+  getPaymentByTransactionId(
+    transactionId: string,
+  ): Promise<ApiResponse<SppPrint>>;
   cancelPayment(transactionId: string): Promise<ApiResponse<SppPrint[]>>;
   gets(payload?: unknown): Promise<ApiResponse<SppPrint[]>>;
   getById(id: number): Promise<ApiResponse<SppPrint[]>>;

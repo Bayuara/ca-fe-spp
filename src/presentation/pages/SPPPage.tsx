@@ -73,9 +73,6 @@ const SPPPage: React.FC = () => {
     }
   };
 
-  // console.log("selectedItems: " + {selectedItems});
-  // console.log("selectedWaitingItems: " + {selectedWaitingItems});
-
   // buat download (print) satuan
   useEffect(() => {
     if (filter === "all") {
@@ -261,6 +258,7 @@ const SPPPage: React.FC = () => {
                 data: response || [],
                 page: { totalItems: response?.length || 0 },
               };
+              // return response || [];
             }}
             getRowId={(val) => val.id}
             refetch={refetch}

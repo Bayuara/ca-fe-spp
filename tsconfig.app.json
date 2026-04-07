@@ -24,6 +24,7 @@
     "noFallthroughCasesInSwitch": true,
 
     // shade ui
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
