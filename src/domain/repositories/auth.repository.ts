@@ -3,8 +3,7 @@
  * Mendefinisikan kontrak tanpa implementasi konkret
  */
 
-import { LoginResponseDto } from "../dto/login.dto";
-import type { User } from "../entities/User";
+import type { LoginResponseDto, User } from "../entities/User";
 
 export interface ApiResponse<T> {
   data: T;

@@ -13,9 +13,8 @@ import type {
   RefreshTokenPayload,
   ResetPasswordPayload,
 } from "@/domain/repositories/auth.repository";
-import type { User } from "@/domain/entities/User";
+import type { LoginResponseDto, User } from "@/domain/entities/User";
 import { ApiClient } from "../api/apiClient";
-import { LoginResponseDto } from "@/domain/dto/login.dto";
 import { SharedResult } from "@/application/use-cases/SharedResult";
 
 export class AuthRepositoryImpl implements AuthRepository {

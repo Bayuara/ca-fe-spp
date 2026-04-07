@@ -40,3 +40,13 @@ export interface User {
   accessToken?: string;
   refreshToken?: string;
 }
+
+export type LoginResponseDto = {
+  username: string;
+  isActive: boolean;
+  isVerified: boolean;
+  accessToken: string;
+  refreshToken: string;
+  loginStatus: "SUCCESS" | "FAILED";
+  isPasswordChangeRequired: boolean;
+};
